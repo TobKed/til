@@ -1,0 +1,28 @@
+name: Deploy blog to gh-pages
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Deploy job
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Build
+      uses: TobKed/blog/.github/python-actions@master
+      env:
+        PIPENV_VENV_IN_PROJECT: true
+      with:
+        args: pip install --upgrade pip && pip install -r requirements.txt
+    - name: Theme install
+      uses: TobKed/blog/.github/python-actions@master
+      with:
+        args: git clone https://github.com/getpelican/pelican-themes.git
+    - name: Deploy
+      uses: TobKed/blog/.github/python-actions@master
+      with:
+        args: ./deploy-to-gh-pages.sh
+      env:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
